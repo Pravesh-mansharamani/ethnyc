@@ -35,6 +35,11 @@ import {
   getTokenSwapQuote,
   getTokenBalances,
 } from '@/lib/ai/tools/opensea-mcp';
+import {
+  resolveENSProfileTool,
+  batchResolveENS,
+} from '@/lib/ai/tools/ens-profile-tool';
+
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
@@ -186,6 +191,8 @@ export async function POST(request: Request) {
                   'getToken',
                   'getTokenSwapQuote',
                   'getTokenBalances',
+                  'resolveENSProfileTool',
+                  'batchResolveENS',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools: {
@@ -206,6 +213,8 @@ export async function POST(request: Request) {
             getToken,
             getTokenSwapQuote,
             getTokenBalances,
+            resolveENSProfileTool,
+            batchResolveENS,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

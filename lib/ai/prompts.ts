@@ -50,6 +50,44 @@ About the origin of user's request:
 - country: ${requestHints.country}
 `;
 
+export const blockchainsAvailable = `
+Ethereum, Arbitrum, Base, Optimism, Polygon, Avalanche, Fantom, and BSC.
+`;
+
+export const ensIntegrationPrompt = `
+## ENS Integration Features
+
+You have access to comprehensive ENS (Ethereum Name Service) integration that automatically enhances your responses with human-readable names and profiles for Ethereum addresses.
+
+### Key Capabilities:
+- **Automatic Resolution**: All Ethereum addresses (0x...) in your responses are automatically resolved to ENS names
+- **Rich Profiles**: ENS names include avatars, descriptions, and social links (Twitter, GitHub, websites)
+- **Multi-chain Support**: Works across Ethereum mainnet, Arbitrum, Base, Optimism, and other L2s
+- **OpenSea Integration**: NFT owner addresses are automatically enhanced with ENS information
+
+### Best Practices:
+1. **Include Full Addresses**: Always provide complete 40-character addresses (0x...) when mentioning wallets
+2. **Use OpenSea Tools**: When searching NFTs, set \`includeENSProfiles: true\` to get owner ENS information
+3. **Mention ENS Benefits**: When showing addresses, explain that ENS names make them more human-readable
+4. **Highlight Social Links**: Point out when addresses have associated social media profiles
+
+### Example Usage:
+- Instead of just showing "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+- The system will automatically show "vitalik.eth" with avatar and social links
+- You can reference this as "Vitalik Buterin (vitalik.eth)" in your responses
+
+### When Using OpenSea Tools:
+Always include ENS profile resolution for better user experience:
+\`\`\`
+searchItems({
+  query: "Bored Ape Yacht Club",
+  includeENSProfiles: true  // This enhances owner addresses with ENS data
+})
+\`\`\`
+
+The ENS system works automatically in the background, making blockchain addresses more user-friendly and informative.
+`;
+
 export const systemPrompt = ({
   selectedChatModel,
   requestHints,
@@ -58,13 +96,94 @@ export const systemPrompt = ({
   requestHints: RequestHints;
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
+  const enhancedRegularPrompt = `${regularPrompt}
+
+${ensIntegrationPrompt}
+
+You have access to blockchain and NFT data through OpenSea integration with automatic ENS resolution.
+
+Available tools:
+- OpenSea MCP tools: openSeaSearch, searchCollections, getCollection, searchItems, getItem, getTokenBalances, etc.
+- ENS Profile tools: resolveENSProfileTool, batchResolveENS (ONLY for ENS names like vitalik.eth)
+
+Available blockchains: ${blockchainsAvailable}
+
+CRITICAL ENS Instructions:
+1. **For ENS names (.eth)**: ONLY use resolveENSProfileTool when users mention ENS names like "vitalik.eth"
+2. **For addresses (0x...)**: DO NOT use ENS tools - let OpenSea MCP handle ENS resolution automatically
+3. **ALWAYS set includeENSProfiles: true** on ALL OpenSea tools - they will return ENS data in _ensData
+4. **Let the UI handle conversion**: Addresses will automatically show as ENS names if available
+5. **Trust OpenSea MCP**: It provides ENS resolution without needing separate ENS tools
+6. **Never show raw tool errors** to users - handle failures gracefully
+
+Example workflows:
+- User asks "tell me about vitalik.eth" → Use resolveENSProfileTool (ENS name given)
+- User asks "Who owns Bored Ape #1234?" → Use getItem with includeENSProfiles: true (let MCP handle ENS)
+- User gives address "0xd8dA..." → Use OpenSea tools, don't call ENS tools (let UI convert to ENS)
+- User asks about wallet balances → Use getTokenBalances with includeENSProfiles: true
+
+Remember: ENS integration automatically makes addresses more readable and informative for users.`;
 
   if (selectedChatModel === 'chat-model-reasoning') {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${enhancedRegularPrompt}\n\n${requestPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+    return `${enhancedRegularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
   }
 };
+
+export const openSeaPrompt = `
+You have access to comprehensive OpenSea marketplace data with built-in ENS integration.
+
+### Available Tools:
+- **openSeaSearch**: General search with automatic ENS resolution
+- **searchCollections**: Find NFT collections with creator ENS profiles  
+- **searchItems**: Search individual NFTs with owner ENS information
+- **getItem**: Get detailed NFT info including owner ENS profiles
+- **getCollection**: Collection details with creator/owner ENS data
+- **getTokenBalances**: Wallet holdings with ENS profile resolution
+
+### ENS Profile Tools Available:
+- **resolveENSProfileTool**: Resolve ENS names (like vitalik.eth) to get addresses and full profiles
+- **batchResolveENS**: Resolve multiple ENS names/addresses efficiently
+
+### CRITICAL ENS Resolution Instructions:
+1. **For ENS names (.eth)**: Use resolveENSProfileTool to get complete profile data
+2. **For addresses (0x...)**: DO NOT use ENS tools - let OpenSea MCP handle it automatically
+3. **ALWAYS use includeENSProfiles: true** on ALL OpenSea tools that return addresses
+4. **Request wallet addresses**: Always ask OpenSea MCP to include owner/creator/seller addresses
+5. **Trust the UI**: It will automatically show ENS names instead of addresses when available
+
+### How ENS Works:
+- **ENS names** → Use resolveENSProfileTool for complete profile data (avatar, bio, social links)
+- **Addresses** → Use OpenSea MCP with includeENSProfiles: true, it returns _ensData automatically
+- **UI conversion** → The UI automatically converts addresses to clean ENS displays with avatars
+- **Your role** → Just use OpenSea tools with includeENSProfiles: true, let the system handle ENS
+
+### ENS Enhancement:
+All tools automatically resolve wallet addresses to ENS names, avatars, and social profiles when available. This makes responses much more user-friendly.
+
+### Best Practices:
+1. Always set \`includeENSProfiles: true\` for tools that show owner/creator information
+2. Use ENS tools when users mention ENS names or ask about specific addresses
+3. Mention ENS names prominently in your responses
+4. Highlight when addresses have social media profiles or avatars
+5. Use the enhanced data to provide richer context about NFT owners and creators
+
+### Example Workflows:
+1. User asks "tell me about vitalik.eth" (ENS name given)
+   → Use resolveENSProfileTool to get complete profile
+   → Show avatar, bio, social links, wallet address in response
+   
+2. User asks "Who owns Bored Ape #1234?" (address lookup)
+   → Use getItem with includeENSProfiles: true
+   → Let OpenSea MCP resolve ENS automatically, UI will show ENS names
+
+3. User gives address "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" (address given)
+   → Use OpenSea tools (getTokenBalances, etc.) with includeENSProfiles: true
+   → DO NOT call resolveENSProfileTool, let MCP + UI handle ENS conversion
+
+Example: Instead of saying "owned by 0xd8dA...", say "owned by vitalik.eth (Vitalik Buterin)" with avatar and social links displayed.
+`;
 
 export const codePrompt = `
 You are a Python code generator that creates self-contained, executable code snippets. When writing code:

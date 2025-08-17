@@ -343,7 +343,14 @@ const PurePreviewMessage = ({
                     const output = toolPart.output;
 
                     // Only show errors, not successful results
+                    // Hide ENS tool errors from users (they're handled gracefully by the AI)
                     if (output && typeof output === 'object' && 'error' in output) {
+                      const isENSTool = toolName === 'resolveENSProfileTool' || toolName === 'batchResolveENS';
+                      
+                      if (isENSTool) {
+                        return null; // Hide ENS tool errors from UI
+                      }
+                      
                       return (
                         <div
                           key={toolCallId}

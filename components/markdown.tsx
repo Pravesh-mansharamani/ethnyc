@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './code-block';
+import { ENSEnhancedText } from './ens-enhanced-text';
 
 const components: Partial<Components> = {
   // @ts-expect-error
@@ -37,6 +38,19 @@ const components: Partial<Components> = {
     );
   },
   a: ({ node, children, ...props }) => {
+    // Check if the link content is an Ethereum address
+    const linkText = typeof children === 'string' ? children : '';
+    if (/^0x[a-fA-F0-9]{40}$/.test(linkText)) {
+      return (
+        <ENSEnhancedText 
+          showFullProfiles={true} 
+          autoResolveProfiles={true}
+        >
+          {linkText}
+        </ENSEnhancedText>
+      );
+    }
+    
     return (
       // @ts-expect-error
       <Link
@@ -90,6 +104,47 @@ const components: Partial<Components> = {
         {children}
       </h6>
     );
+  },
+  p: ({ node, children, ...props }) => {
+    // Process children to enhance any Ethereum addresses
+    const processChildren = (children: any): any => {
+      if (typeof children === 'string') {
+        // Check if the entire string is an address or contains addresses
+        if (/0x[a-fA-F0-9]{40}/.test(children)) {
+          return (
+            <ENSEnhancedText 
+              showFullProfiles={true} 
+              autoResolveProfiles={true}
+            >
+              {children}
+            </ENSEnhancedText>
+          );
+        }
+        return children;
+      }
+      if (Array.isArray(children)) {
+        return children.map((child, index) => 
+          React.isValidElement(child) ? child : processChildren(child)
+        );
+      }
+      return children;
+    };
+
+    return <p {...props}>{processChildren(children)}</p>;
+  },
+  // Handle text nodes to enhance with ENS resolution
+  text: ({ node, children, ...props }) => {
+    if (typeof children === 'string' && /0x[a-fA-F0-9]{40}/.test(children)) {
+      return (
+        <ENSEnhancedText 
+          showFullProfiles={true} 
+          autoResolveProfiles={true}
+        >
+          {children}
+        </ENSEnhancedText>
+      );
+    }
+    return <>{children}</>;
   },
 };
 
