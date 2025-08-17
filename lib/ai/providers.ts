@@ -25,11 +25,11 @@ export const myProvider = isTestEnvironment
       languageModels: {
         'chat-model': openai('gpt-4o-mini'),
         'chat-model-reasoning': wrapLanguageModel({
-          model: openai('gpt-4o-mini'),
+          model: openai('gpt-4.1'),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
         }),
         'title-model': openai('gpt-4o-mini'),
-        'artifact-model': openai('gpt-4o-mini'),
+        'artifact-model': openai('gpt-4.1'),
       },
       imageModels: {
         'small-model': openai.image('dall-e-3'),
