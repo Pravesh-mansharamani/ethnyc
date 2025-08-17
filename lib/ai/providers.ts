@@ -32,6 +32,6 @@ export const myProvider = isTestEnvironment
         'artifact-model': openai('gpt-4o-mini'),
       },
       imageModels: {
-        'small-model': openai('gpt-4o-mini'),
+        'small-model': openai.image('dall-e-3'),
       },
     });
