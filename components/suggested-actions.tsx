@@ -20,24 +20,24 @@ function PureSuggestedActions({
 }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'What are the top crypto punks',
+      label: 'in the market?',
+      action: 'what are the top crypto punks in the market?',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'What are the top bored ape',
+      label: `nfts in the market?`,
+      action: `what are the top bored ape nfts in the market?`,
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'How many assets does',
+      label: `vitalik.eth have?`,
+      action: `how many assets does vitalik.eth have?`,
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'What is the price of',
+      label: 'ETH?',
+      action: 'what is the price of ETH?',
     },
   ];
 
