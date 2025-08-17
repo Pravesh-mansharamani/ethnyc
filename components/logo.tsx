@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 
 export function Logo({ size = 24, className }: { size?: number; className?: string }) {
   const [shouldShowImage, setShouldShowImage] = useState<boolean | null>(null);

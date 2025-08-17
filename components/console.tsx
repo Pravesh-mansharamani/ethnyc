@@ -1,5 +1,6 @@
 import { TerminalWindowIcon, LoaderIcon, CrossSmallIcon } from './icons';
 import { Button } from './ui/button';
+import Image from 'next/image';
 import {
   type Dispatch,
   type SetStateAction,
@@ -152,9 +153,11 @@ export function Console({ consoleOutputs, setConsoleOutputs }: ConsoleProps) {
                   {consoleOutput.contents.map((content, index) =>
                     content.type === 'image' ? (
                       <picture key={`${consoleOutput.id}-${index}`}>
-                        <img
+                        <Image
                           src={content.value}
                           alt="output"
+                          width={800}
+                          height={600}
                           className="rounded-md max-w-screen-toast-mobile w-full"
                         />
                       </picture>

@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { useENSResolver } from '@/hooks/use-ens-resolver';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 // Regex to match Ethereum addresses (0x followed by 40 hex characters)
@@ -49,16 +50,18 @@ const AddressSpan: React.FC<AddressSpanProps> = ({
         )}
       >
         {avatar ? (
-          <img 
+          <Image 
             src={avatar} 
             alt={`${profile.name} avatar`}
-            className="w-5 h-5 rounded-full object-cover border border-green-300 dark:border-green-700"
+            width={20}
+            height={20}
+            className="rounded-full object-cover border border-green-300 dark:border-green-700"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
           />
         ) : (
-          <div className="w-5 h-5 rounded-full bg-green-200 dark:bg-green-800 flex items-center justify-center">
+          <div className="size-5 rounded-full bg-green-200 dark:bg-green-800 flex items-center justify-center">
             <span className="text-xs text-green-600 dark:text-green-400">👤</span>
           </div>
         )}
@@ -219,16 +222,18 @@ export const NFTOwnerDisplay: React.FC<{
         )}
       >
         {profile.avatar ? (
-          <img 
+          <Image 
             src={profile.avatar} 
             alt={`${profile.name} avatar`}
-            className="w-6 h-6 rounded-full object-cover border border-border"
+            width={24}
+            height={24}
+            className="rounded-full object-cover border border-border"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
           />
         ) : (
-          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+          <div className="size-6 rounded-full bg-muted flex items-center justify-center">
             <span className="text-xs text-muted-foreground">👤</span>
           </div>
         )}
@@ -246,7 +251,7 @@ export const NFTOwnerDisplay: React.FC<{
         "text-muted-foreground",
         className
       )}>
-        <div className="w-6 h-6 rounded-full bg-muted-foreground/20 flex items-center justify-center">
+        <div className="size-6 rounded-full bg-muted-foreground/20 flex items-center justify-center">
           <span className="text-xs">👤</span>
         </div>
         <span className="text-sm font-mono break-all">

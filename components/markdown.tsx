@@ -124,7 +124,7 @@ const components: Partial<Components> = {
       }
       if (Array.isArray(children)) {
         return children.map((child, index) => 
-          React.isValidElement(child) ? child : processChildren(child)
+          isValidElement(child) ? child : processChildren(child)
         );
       }
       return children;

@@ -464,7 +464,7 @@ export const ThinkingMessage = () => {
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="w-1 h-1 bg-current rounded-full"
+                    className="size-1 bg-current rounded-full"
                     animate={{ opacity: [0.3, 1, 0.3] }}
                     transition={{
                       duration: 1.5,

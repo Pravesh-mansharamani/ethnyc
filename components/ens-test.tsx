@@ -88,8 +88,8 @@ These should resolve to show avatars, social links, and profile information.
             <li>• <strong>shaq.eth</strong> should show avatar and Twitter (@shaq)</li>
             <li>• <strong>vitalik.eth</strong> should show full profile with social links</li>
             <li>• Multiple RPC endpoints are tried for better reliability</li>
-            <li>• Both "com.twitter" and "twitter" keys are checked</li>
-            <li>• If addresses don't resolve, they'll show in full (no truncation)</li>
+            <li>• Both &quot;com.twitter&quot; and &quot;twitter&quot; keys are checked</li>
+            <li>• If addresses don&apos;t resolve, they&apos;ll show in full (no truncation)</li>
             <li>• The system caches results for better performance</li>
           </ul>
         </div>

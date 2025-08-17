@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 interface ENSProfileDisplayProps {
@@ -40,10 +41,12 @@ export const ENSProfileDisplay: React.FC<ENSProfileDisplayProps> = ({
         className
       )}>
         {profile.avatar && (
-          <img 
+          <Image 
             src={profile.avatar} 
             alt={`${profile.name} avatar`}
-            className="w-6 h-6 rounded-full object-cover border border-border"
+            width={24}
+            height={24}
+            className="rounded-full object-cover border border-border"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
@@ -69,10 +72,12 @@ export const ENSProfileDisplay: React.FC<ENSProfileDisplayProps> = ({
       {/* Header with avatar and name */}
       <div className="flex items-center gap-4">
         {profile.avatar && (
-          <img 
+          <Image 
             src={profile.avatar} 
             alt={`${profile.name} avatar`}
-            className="w-16 h-16 rounded-full object-cover border-2 border-green-200 dark:border-green-800"
+            width={64}
+            height={64}
+            className="rounded-full object-cover border-2 border-green-200 dark:border-green-800"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
