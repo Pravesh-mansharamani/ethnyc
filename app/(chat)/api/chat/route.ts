@@ -23,6 +23,18 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
+import {
+  openSeaSearch,
+  fetchEntity,
+  searchCollections,
+  getCollection,
+  searchItems,
+  getItem,
+  searchTokens,
+  getToken,
+  getTokenSwapQuote,
+  getTokenBalances,
+} from '@/lib/ai/tools/opensea-mcp';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
@@ -164,6 +176,16 @@ export async function POST(request: Request) {
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
+                  'openSeaSearch',
+                  'fetchEntity',
+                  'searchCollections',
+                  'getCollection',
+                  'searchItems',
+                  'getItem',
+                  'searchTokens',
+                  'getToken',
+                  'getTokenSwapQuote',
+                  'getTokenBalances',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools: {
@@ -174,6 +196,16 @@ export async function POST(request: Request) {
               session,
               dataStream,
             }),
+            openSeaSearch,
+            fetchEntity,
+            searchCollections,
+            getCollection,
+            searchItems,
+            getItem,
+            searchTokens,
+            getToken,
+            getTokenSwapQuote,
+            getTokenBalances,
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
