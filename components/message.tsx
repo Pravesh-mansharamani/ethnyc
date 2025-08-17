@@ -1,7 +1,7 @@
 'use client';
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import type { Vote } from '@/lib/db/schema';
 import { DocumentToolCall, DocumentToolResult } from './document';
 import { PencilEditIcon, SparklesIcon } from './icons';
@@ -19,6 +19,7 @@ import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import type { ChatMessage } from '@/lib/types';
 import { useDataStream } from './data-stream-provider';
+import { ToolExecution } from './tool-execution';
 
 // Type narrowing is handled by TypeScript's control flow analysis
 // The AI SDK provides proper discriminated unions for tool calls
@@ -307,6 +308,58 @@ const PurePreviewMessage = ({
                   );
                 }
               }
+
+              // Generic handler for other tools (like OpenSea tools)
+              // Check if this is a tool that we haven't explicitly handled
+              if (typeof type === 'string' && type.startsWith('tool-') && 
+                  type !== 'tool-getWeather' && 
+                  type !== 'tool-createDocument' && 
+                  type !== 'tool-updateDocument' && 
+                  type !== 'tool-requestSuggestions') {
+                
+                // TypeScript doesn't know about these tool types, so we'll use any
+                const toolPart = part as any;
+                
+                if (toolPart.toolCallId && toolPart.state) {
+                  const { toolCallId, state } = toolPart;
+                  const toolName = type.replace('tool-', '');
+
+                  // Only show the tool execution indicator while loading
+                  if (state === 'input-available') {
+                    const input = toolPart.input;
+                    return (
+                      <div key={toolCallId}>
+                        <ToolExecution 
+                          toolName={toolName}
+                          args={input}
+                        />
+                      </div>
+                    );
+                  }
+
+                  // When output is available, show error if there is one, otherwise show nothing
+                  // (let the AI's response handle showing the results)
+                  if (state === 'output-available') {
+                    const output = toolPart.output;
+
+                    // Only show errors, not successful results
+                    if (output && typeof output === 'object' && 'error' in output) {
+                      return (
+                        <div
+                          key={toolCallId}
+                          className="text-destructive p-3 border border-destructive/20 rounded-md bg-destructive/5"
+                        >
+                          <div className="font-medium text-sm">Tool Error: {toolName}</div>
+                          <div className="text-xs mt-1 text-muted-foreground">{String(output.error)}</div>
+                        </div>
+                      );
+                    }
+
+                    // For successful results, return null (don't show anything)
+                    return null;
+                  }
+                }
+              }
             })}
 
             {!isReadonly && (
@@ -341,13 +394,30 @@ export const PreviewMessage = memo(
 
 export const ThinkingMessage = () => {
   const role = 'assistant';
+  const [currentThought, setCurrentThought] = useState(0);
+  
+  const thoughts = [
+    "Thinking about your question...",
+    "Analyzing the context...",
+    "Considering different approaches...",
+    "Processing information...",
+    "Formulating a response...",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentThought((prev) => (prev + 1) % thoughts.length);
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, [thoughts.length]);
 
   return (
     <motion.div
       data-testid="message-assistant-loading"
-      className="w-full mx-auto max-w-3xl px-4 group/message min-h-96"
+      className="w-full mx-auto max-w-3xl px-4 group/message"
       initial={{ y: 5, opacity: 0 }}
-      animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
+      animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
       data-role={role}
     >
       <div
@@ -359,12 +429,45 @@ export const ThinkingMessage = () => {
         )}
       >
         <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <SparklesIcon size={14} />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
+            <SparklesIcon size={14} />
+          </motion.div>
         </div>
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
+            <motion.div
+              key={currentThought}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-2"
+            >
+              <span>{thoughts[currentThought]}</span>
+              <motion.div
+                className="flex gap-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1 h-1 bg-current rounded-full"
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
