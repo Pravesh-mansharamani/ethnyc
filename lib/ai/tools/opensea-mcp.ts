@@ -305,22 +305,20 @@ export const getTokenSwapQuote = tool({
 });
 
 export const getTokenBalances = tool({
-  description: 'Retrieve all token balances for a wallet address with ENS resolution',
+  description: 'Retrieve all token balances for a wallet address',
   inputSchema: z.object({
     address: z.string().describe('Wallet address to check balances for'),
     chain: z.string().optional().describe('Blockchain to check (default: ethereum)'),
-    include_nfts: z.boolean().default(false).optional().describe('Include NFT balances'),
-    includeENSProfiles: z.boolean().default(true).optional().describe('Include ENS profile for the wallet address'),
+    include_nfts: z.boolean().default(true).optional().describe('Include NFT balances'),
+    includeENSProfiles: z.boolean().default(false).optional().describe('Include ENS profile for the wallet address (disabled by default)'),
   }),
   execute: async ({ address, chain, include_nfts, includeENSProfiles }) => {
     try {
       const client = await getSafeOpenSeaMCPClient();
       const response = await client.callTool('get_token_balances', { address, chain, include_nfts });
       
-      // Enhance response with ENS data
-      const enhancedResponse = await enhanceWithENS(response, includeENSProfiles);
-      
-      return enhancedResponse;
+      // Return raw response without ENS enhancement
+      return response;
     } catch (error) {
       console.error('Error getting token balances:', error);
       return {

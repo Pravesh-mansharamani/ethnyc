@@ -57,11 +57,27 @@ const AddressSpan: React.FC<AddressSpanProps> = ({
             height={20}
             className="rounded-full object-cover border border-green-300 dark:border-green-700"
             onError={(e) => {
+              // Hide the failed image and show fallback
               (e.target as HTMLImageElement).style.display = 'none';
+              // Find the parent container and show fallback
+              const parent = (e.target as HTMLImageElement).parentElement;
+              if (parent) {
+                const fallback = parent.querySelector('.avatar-fallback');
+                if (fallback) {
+                  (fallback as HTMLElement).style.display = 'flex';
+                }
+              }
             }}
+            unoptimized={true}
           />
         ) : (
           <div className="size-5 rounded-full bg-green-200 dark:bg-green-800 flex items-center justify-center">
+            <span className="text-xs text-green-600 dark:text-green-400">👤</span>
+          </div>
+        )}
+        {/* Fallback avatar that shows if image fails */}
+        {avatar && (
+          <div className="avatar-fallback size-5 rounded-full bg-green-200 dark:bg-green-800 flex items-center justify-center" style={{ display: 'none' }}>
             <span className="text-xs text-green-600 dark:text-green-400">👤</span>
           </div>
         )}
